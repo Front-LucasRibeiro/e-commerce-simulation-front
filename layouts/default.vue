@@ -6,18 +6,18 @@
         <Nuxt />
       </v-container>
     </v-main>
-    <v-footer :absolute="!fixed" app>
-      <span>&copy; {{ new Date().getFullYear() }}</span>
-    </v-footer>
+    <Footer />
   </v-app>
 </template>
 
 <script>
 import Header from '@/components/Header.vue';
+import Footer from '../components/Footer.vue';
 
 export default {
   components: {
-    Header
+    Header,
+    Footer
   },
   data() {
     return {
@@ -27,9 +27,4 @@ export default {
 }
 </script>
 
-<style scoped>
-/* Estilos adicionais para o layout, se necessário */
-img {
-  width: 40px;
-}
-</style>
+<style scoped></style>
