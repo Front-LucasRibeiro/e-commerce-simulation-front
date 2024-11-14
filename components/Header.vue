@@ -6,12 +6,14 @@
       </nuxt-link>
     </v-toolbar-title>
 
-    <v-text-field append-icon="mdi-magnify" label="Pesquisar..." single-line hide-details
-      class="search-field"></v-text-field>
+    <div class="search-field">
+      <input type="text" placeholder="Pesquisar...">
+      <button>🔍</button>
+    </div>
 
     <v-menu offset-y>
       <template v-slot:activator="{ on }">
-        <v-btn text v-on="on">Masculino</v-btn>
+        <v-btn text class="white--text" v-on="on">Masculino</v-btn>
       </template>
       <v-list class="drop-menu">
         <v-list-item>
@@ -25,7 +27,7 @@
 
     <v-menu offset-y>
       <template v-slot:activator="{ on }">
-        <v-btn text v-on="on">Feminino</v-btn>
+        <v-btn text class="white--text" v-on="on">Feminino</v-btn>
       </template>
       <v-list class="drop-menu">
         <v-list-item>
@@ -40,7 +42,7 @@
       </v-list>
     </v-menu>
 
-    <v-btn text class="ml-4">Minha Conta</v-btn>
+    <v-btn text class="ml-4 white--text">Minha Conta</v-btn>
 
     <div class="count-cart ml-4">
       <v-avatar>
@@ -68,7 +70,31 @@ export default defineComponent({
   padding: 8px 14px;
 }
 
+.search-field {
+  display: flex;
+  align-items: center;
+  width: 100%;
+
+  input {
+    padding-bottom: 6px;
+    color: #fff;
+    border: 0;
+    border-bottom: 1px solid #fff;
+    width: 100%;
+
+    &:focus-visible {
+      outline: 0;
+    }
+
+    &::placeholder {
+      color: #fff;
+    }
+  }
+}
+
 .drop-menu {
+  margin-top: 8px;
+
   >.v-list-item {
     transition: .2s;
     padding: 0;
@@ -85,7 +111,7 @@ export default defineComponent({
 
   a {
     display: inline-block;
-    color: #fff;
+    color: #111;
     text-decoration: none;
     width: 100%;
     height: 48px;
@@ -95,11 +121,6 @@ export default defineComponent({
   }
 }
 
-.search-field {
-  margin: 0;
-  padding: 0;
-}
-
 .wrap-logo {
   a {
     display: flex;
@@ -107,12 +128,14 @@ export default defineComponent({
 
   .logo {
     width: 72px;
+    min-width: 100%;
   }
 }
 
 .qtd-items {
   border-radius: 100%;
   background: #111;
+  color: #fff;
   width: auto;
   height: 23px;
   font-size: 13px;
@@ -129,5 +152,6 @@ export default defineComponent({
   position: relative;
   display: flex;
   align-items: center;
+  cursor: pointer;
 }
 </style>

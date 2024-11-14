@@ -1,6 +1,6 @@
 <template>
   <v-row justify="center" align="center">
-    ds
+    home page
   </v-row>
 </template>
 
