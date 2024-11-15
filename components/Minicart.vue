@@ -76,13 +76,21 @@ export default defineComponent({
   },
 
   computed: {
-    cartTotal(): string {
-      const total = this.cartItems.reduce((total, item) => {
-        const price = parseFloat(item.price.replace('R$', '').replace(',', '.').trim());
-        return total + (price * item.quantity);
-      }, 0);
+    cartTotal() {
+      // Certifique-se de que cartItems não seja undefined ou null
+      if (!this.cartItems || this.cartItems.length === 0) {
+        return 0; // Retorna 0 se não houver itens no carrinho
+      }
 
-      return this.formatCurrency(total);
+      // Calcula o total do carrinho
+      return this.cartItems.reduce((total, item) => {
+        // Verifica se o item.price é uma string ou um número
+        const price = parseFloat(item.price);
+        if (!isNaN(price)) {
+          return total + (price * item.quantity);
+        }
+        return total; // Se o preço não for válido, não adiciona
+      }, 0);
     }
   },
 
@@ -162,6 +170,8 @@ export default defineComponent({
   .list {
     padding-left: 0;
     list-style: none;
+    overflow: auto;
+    height: 82vh;
   }
 
   .wrap-item-top {

@@ -7,11 +7,12 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, onMounted } from 'vue';
+import { defineComponent } from 'vue';
 import Shelfs from '@/components/Shelfs.vue';
 import Minicart from '@/components/Minicart.vue';
 import BannerCarousel from '@/components/BannerCarousel.vue';
 import { cartService } from '~/services/cartService';
+import { mdiConsoleNetwork } from '@mdi/js';
 
 interface CartItem {
   id: number;
@@ -35,41 +36,24 @@ export default defineComponent({
       userId: 1,                    // Defina o ID do usuário (isso deve ser dinâmico em um sistema real)
     };
   },
-  async mounted() {
-    // await this.loadCart(); // Carregar o carrinho ao montar o componente
-  },
-  methods: {
-    async loadCart() {
-      try {
-        const cart: any = await cartService.getCart(1);
-        console.log('cart', cart)
-        if (cart) {
-          this.cartItems = cart.map((item: any) => ({
-            id: item.items.map((item: any) => item.product.id).join(', '),
-            name: item.items.map((item: any) => item.product.name).join(', '), // Mapear o nome conforme necessário
-            price: item.items.map((item: any) => item.product.price).join(', '), // Mapear o preço conforme necessário
-            image: item.items.map((item: any) => item.product.image).join(', '), // Mapear a imagem conforme necessário
-            quantity: item.items.map((item: any) => item.quantity).join(', '),
-          }));
-        }
-      } catch (error) {
-        console.error('Erro ao carregar o carrinho:', error);
-      }
-    },
 
+  methods: {
     async addToCart(product: CartItem) {
+      // Verifica se o produto já existe no carrinho
       const existingProduct = this.cartItems.find(item => item.id === product.id);
 
       if (existingProduct) {
         existingProduct.quantity++;
       } else {
-        this.cartItems.push({ ...product, quantity: 1 });
+        const newItem = { ...product, quantity: 1 };
+        this.cartItems.push(newItem);
       }
 
-      this.openMinicart();  // Abrir o minicart após adicionar um item
+      this.openMinicart();
 
-      // Atualizar carrinho na API
       await this.updateCartInApi();
+
+      await this.refreshCart();
     },
 
     openMinicart() {
@@ -80,22 +64,52 @@ export default defineComponent({
       this.isMinicartOpen = false;
     },
 
+    async refreshCart() {
+      try {
+        let cart: any = await cartService.getCart(this.userId);
+        console.log('Carrinho atualizado do backend:', cart[0]?.items);
+
+        // Atualiza o estado local do carrinho com os dados mais recentes do backend
+        this.cartItems = cart[0]?.items.map((item: any) => ({
+          id: item.productId,
+          quantity: item.quantity,
+          name: item.product.name, // Assumindo que o nome está disponível
+          price: item.product.price, // Assumindo que o preço está disponível
+          image: item.product.image, // Assumindo que a imagem está disponível
+        })) || [];
+      } catch (error) {
+        console.error('Erro ao atualizar o carrinho do backend:', error);
+      }
+    },
+
     async updateCartInApi() {
       try {
-        let cart = await cartService.getCart(this.userId);
+        let cart: any = await cartService.getCart(this.userId);
+        console.log(cart)
 
         if (!cart) {
           // Cria um carrinho novo se não existir
           cart = await cartService.createCart(this.userId, this.cartItems.map(item => ({
-            productId: item.id,
-            quantity: item.quantity,
+            productId: Number(item.id),
+            quantity: Number(item.quantity),
           })));
         } else {
-          // Atualiza os itens no carrinho existente
-          await cartService.addItemsToCart(cart.id, this.cartItems.map(item => ({
-            productId: item.id,
-            quantity: item.quantity,
-          })));
+          // Obtem o ID do carrinho
+          const cartId = cart[0].id;
+          console.log('else', cartId)
+
+          // Verifique quais itens precisam ser atualizados ou adicionados
+          for (const item of this.cartItems) {
+            const existingItem = cart[0].items.find((cartItem: any) => cartItem.productId === item.id);
+
+            if (existingItem) {
+              // Atualiza a quantidade do item existente
+              await cartService.updateItemsToCart(cartId, item.id, item.quantity);
+            } else {
+              // Adiciona o novo item ao carrinho
+              await cartService.addItemsToCart(cartId, [{ productId: item.id, quantity: item.quantity }]);
+            }
+          }
         }
 
         console.log('Carrinho atualizado no banco:', cart);
@@ -104,7 +118,7 @@ export default defineComponent({
       }
     },
   },
-});
+})
 </script>
 
 <style scoped>
