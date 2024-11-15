@@ -45,7 +45,7 @@
 <script lang="ts">
 import { defineComponent, PropType } from 'vue';
 import { mdiDelete } from '@mdi/js';
-
+import { cartService } from '~/services/cartService';
 
 interface CartItem {
   id: number;
@@ -74,10 +74,6 @@ export default defineComponent({
       iconSize: 22,
     };
   },
-  mounted() {
-    console.log('Cart Items:', this.cartItems);
-
-  },
 
   computed: {
     cartTotal(): string {
@@ -95,13 +91,28 @@ export default defineComponent({
       this.$emit('minicart-closed');
     },
 
-    increaseQuantity(index: number) {
+    async increaseQuantity(index: number) {
       this.cartItems[index].quantity++;
+      await this.updateCartItem(this.cartItems[index]);
     },
 
-    decreaseQuantity(index: number) {
+    async decreaseQuantity(index: number) {
       if (this.cartItems[index].quantity > 1) {
         this.cartItems[index].quantity--;
+        await this.updateCartItem(this.cartItems[index]);
+      }
+    },
+
+    async updateCartItem(item: CartItem) {
+      try {
+        const cartId = 3; // Substitua pelo ID real do carrinho
+        const productId = Number(item.id); // ID do produto
+        const quantity = Number(item.quantity); // Nova quantidade
+
+        // Chama o serviço para atualizar a quantidade do item
+        await cartService.updateItemsToCart(cartId, productId, quantity);
+      } catch (error) {
+        console.error('Erro ao atualizar item no carrinho:', error);
       }
     },
 

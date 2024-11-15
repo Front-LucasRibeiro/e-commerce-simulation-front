@@ -51,7 +51,8 @@
         <v-avatar>
           <span class="icon">🛒</span>
         </v-avatar>
-        <span class="qtd-items">{{ cartItems.length }}</span>
+        <span class="qtd-items">{{ localCartItems.reduce((acc, item) => acc + item.quantity, 0)
+          }}</span>
       </div>
       <div class="menu-mob" @click="toggleMobileMenu">☰</div>
     </div>
@@ -90,6 +91,7 @@ import Minicart from '@/components/Minicart.vue';
 import axios from 'axios';
 import { PropType } from 'vue';
 import { cartService } from '~/services/cartService';
+import { onMounted } from 'vue';
 
 interface CartItem {
   id: number;
@@ -134,27 +136,31 @@ export default defineComponent({
     async loadCart() {
       const userId = 1; // Defina o ID do usuário
       try {
-        const cart = await cartService.getCart(userId);
-        console.log('Cart Data:', cart); // Verifique o que está sendo retornado
+        const cart = await cartService.getCart(1);
+        console.log('Cart Data header:', cart); // Verifique o que está sendo retornado
 
-        if (Array.isArray(cart)) {
-          // Se a resposta for um array de itens
-          this.localCartItems = cart.map(item => ({
-            id: item.productId,
-            name: item.items.map((item: any) => item.product.name).join(', '), // Mapear o nome conforme necessário
-            price: item.items.map((item: any) => item.product.price).join(', '), // Mapear o preço conforme necessário
-            image: item.items.map((item: any) => item.product.image).join(', '), // Mapear a imagem conforme necessário
-            quantity: item.items.map((item: any) => item.quantity).join(', '),
+        if (Array.isArray(cart) && cart.length > 0 && Array.isArray(cart[0].items)) {
+          this.localCartItems = cart[0].items.map((item: any) => ({
+            id: item.product.id,
+            name: item.product.name,
+            price: item.product.price,
+            image: item.product.image,
+            quantity: item.quantity,
           }));
         } else {
           console.error('Cart items are not defined or not an array');
-          this.localCartItems = []; // Inicializa como array vazio se não houver itens
+          this.localCartItems = [];
         }
       } catch (error) {
-        console.error('Erro ao carregar o carrinho:', error);
+        console.error('Erro ao carregar o carrinho header:', error);
       }
     }
-  }
+  },
+
+  mounted() {
+    console.log('exec')
+    this.loadCart();
+  },
 });
 </script>
 

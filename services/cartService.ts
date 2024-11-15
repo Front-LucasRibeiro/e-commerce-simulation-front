@@ -24,6 +24,22 @@ export const cartService = {
     return await response.json();
   },
 
+  async updateItemsToCart(cartId: number, productId: number, quantity: number): Promise<CreateCartResponse> {
+    const response = await fetch(`${API_URL}/${cartId}/item`, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ productId, quantity }), // Certifique-se de que `productId` e `quantity` são números
+    });
+
+    if (!response.ok) {
+      throw new Error('Erro ao atualizar item no carrinho: ' + response.statusText);
+    }
+
+    return await response.json();
+  },
+
   async createCart(userId: number, items: Item[]): Promise<CreateCartResponse> {
     const response = await fetch(API_URL, {
       method: 'POST',

@@ -36,20 +36,20 @@ export default defineComponent({
     };
   },
   async mounted() {
-    await this.loadCart(); // Carregar o carrinho ao montar o componente
+    // await this.loadCart(); // Carregar o carrinho ao montar o componente
   },
   methods: {
     async loadCart() {
       try {
-        const cart = await cartService.getCart(this.userId);
+        const cart: any = await cartService.getCart(1);
         console.log('cart', cart)
         if (cart) {
-          this.cartItems = cart.items.map(item => ({
-            id: item.productId,
-            name: '', // Aqui você pode mapear para os nomes corretos se necessário
-            price: 'R$ 0,00', // Mapear o preço corretamente se necessário
-            image: '', // Mapear a imagem correta se necessário
-            quantity: item.quantity,
+          this.cartItems = cart.map((item: any) => ({
+            id: item.items.map((item: any) => item.product.id).join(', '),
+            name: item.items.map((item: any) => item.product.name).join(', '), // Mapear o nome conforme necessário
+            price: item.items.map((item: any) => item.product.price).join(', '), // Mapear o preço conforme necessário
+            image: item.items.map((item: any) => item.product.image).join(', '), // Mapear a imagem conforme necessário
+            quantity: item.items.map((item: any) => item.quantity).join(', '),
           }));
         }
       } catch (error) {
