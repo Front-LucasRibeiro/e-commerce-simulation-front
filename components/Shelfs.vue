@@ -10,7 +10,7 @@
         <span>{{ product.name }}</span>
         <span class="price">{{ product.price }}</span>
         <v-btn color="success" class="add-to-cart-btn" @click="$emit('add-to-cart', product)">
-          Adicionar ao carrinho
+          {{ isMobile ? 'adicionar' : 'Adicionar ao carrinho' }}
         </v-btn>
       </div>
     </div>
@@ -49,6 +49,7 @@ export default {
         { id: 2, skuId: 2, name: 'Camisa Masculina', alt: 'Camisa Masculina', image: mensShirt, price: 'R$ 88,00', stock: '150' },
       ] as Product[],
       swiper: null as Swiper | null,
+      isMobile: false,
     };
   },
   mounted() {
@@ -64,7 +65,27 @@ export default {
         nextEl: '.swiper-button-next',
         prevEl: '.swiper-button-prev',
       },
+      breakpoints: {
+        280: {
+          slidesPerView: 2,
+          spaceBetween: 10,
+        },
+        600: {
+          slidesPerView: 3,
+          spaceBetween: 10,
+        },
+        800: {
+          slidesPerView: 4,
+          spaceBetween: 10,
+        },
+        1920: {
+          slidesPerView: 6,
+          spaceBetween: 10,
+        },
+      },
     });
+
+    this.isMobile = window.innerWidth < 1025;
   },
 };
 </script>
@@ -81,6 +102,10 @@ export default {
   margin-top: 10px;
   text-transform: none;
   margin: 0 14px 18px;
+
+  @media (max-width: 480px) {
+    font-size: 12px;
+  }
 }
 
 .swiper-wrapper {
