@@ -74,6 +74,10 @@ export default defineComponent({
       iconSize: 22,
     };
   },
+  mounted() {
+    console.log('Cart Items:', this.cartItems);
+
+  },
 
   computed: {
     cartTotal(): string {

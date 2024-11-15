@@ -5,7 +5,7 @@
 
     <div class="swiper-wrapper">
       <div class="swiper-slide" v-for="(product, index) in products" :key="index">
-        <img :src="product.image" :alt="product.alt" class="banner-image" />
+        <img :src="`/${product.image}`" :alt="product.alt" class="banner-image" />
         <span class="sku"><strong>sku:</strong>{{ product.skuId }}</span>
         <span>{{ product.name }}</span>
         <span class="price">{{ product.price }}</span>
@@ -18,11 +18,11 @@
 </template>
 
 <script lang="ts">
+import { defineComponent } from 'vue';
 import 'swiper/swiper-bundle.css';
 import Swiper from 'swiper';
 import { Autoplay, Navigation } from 'swiper/modules';
-import mensShirt from '@/assets/camisa-masculina.webp';
-import mensPants from '@/assets/calca-masculina.webp';
+import { getProducts } from '~/services/productService';
 
 Swiper.use([Autoplay, Navigation]);
 
@@ -36,23 +36,18 @@ interface Product {
   stock: string;
 }
 
-export default {
+export default defineComponent({
+  name: 'Shelfs',
   data() {
     return {
-      products: [
-        { id: 1, skuId: 1, name: 'Calça Jeans Masculina', alt: 'Calça Jeans Masculina', image: mensPants, price: 'R$ 78,00', stock: '150' },
-        { id: 2, skuId: 2, name: 'Camisa Masculina', alt: 'Camisa Masculina', image: mensShirt, price: 'R$ 88,00', stock: '150' },
-        { id: 1, skuId: 1, name: 'Calça Jeans Masculina', alt: 'Calça Jeans Masculina', image: mensPants, price: 'R$ 78,00', stock: '150' },
-        { id: 2, skuId: 2, name: 'Camisa Masculina', alt: 'Camisa Masculina', image: mensShirt, price: 'R$ 88,00', stock: '150' },
-        { id: 1, skuId: 1, name: 'Calça Jeans Masculina', alt: 'Calça Jeans Masculina', image: mensPants, price: 'R$ 78,00', stock: '150' },
-        { id: 2, skuId: 2, name: 'Camisa Masculina', alt: 'Camisa Masculina', image: mensShirt, price: 'R$ 88,00', stock: '150' },
-        { id: 2, skuId: 2, name: 'Camisa Masculina', alt: 'Camisa Masculina', image: mensShirt, price: 'R$ 88,00', stock: '150' },
-      ] as Product[],
+      products: [] as Product[],
       swiper: null as Swiper | null,
       isMobile: false,
     };
   },
   mounted() {
+    this.fetchProducts();
+
     this.swiper = new Swiper('.swiper-container-shelf', {
       loop: true,
       slidesPerView: 6,
@@ -87,7 +82,16 @@ export default {
 
     this.isMobile = window.innerWidth < 1025;
   },
-};
+  methods: {
+    async fetchProducts() {
+      try {
+        this.products = await getProducts();
+      } catch (error) {
+        console.error('Erro ao carregar os produtos:', error);
+      }
+    },
+  },
+});
 </script>
 
 <style scoped lang="scss">

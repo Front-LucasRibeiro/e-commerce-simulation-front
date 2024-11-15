@@ -11,15 +11,16 @@
 </template>
 
 <script lang="ts">
+import { defineComponent } from 'vue';
 import 'swiper/swiper-bundle.css';
 import Swiper from 'swiper';
+import { Autoplay } from 'swiper/modules';
 import banner1 from '@/assets/banner1.jpg';
 import banner2 from '@/assets/banner2.jpg';
-import { Autoplay } from 'swiper/modules';
 
 Swiper.use([Autoplay]);
 
-export default {
+export default defineComponent({
   data() {
     return {
       banners: [
@@ -40,7 +41,7 @@ export default {
       spaceBetween: 10,
     });
   },
-};
+});
 </script>
 
 <style scoped>

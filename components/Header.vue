@@ -79,14 +79,17 @@
 
     <!-- Minicart -->
     <transition name="fade">
-      <Minicart :cartItems="cartItems" :isOpen="isMinicartOpen" @minicart-closed="closeMinicart" />
+      <Minicart :cartItems="localCartItems" :isOpen="isMinicartOpen" @minicart-closed="closeMinicart" />
     </transition>
   </header>
 </template>
 
 <script lang="ts">
+import { defineComponent } from 'vue';
 import Minicart from '@/components/Minicart.vue';
+import axios from 'axios';
 import { PropType } from 'vue';
+import { cartService } from '~/services/cartService';
 
 interface CartItem {
   id: number;
@@ -96,36 +99,65 @@ interface CartItem {
   quantity: number;
 }
 
-export default {
+export default defineComponent({
   components: {
     Minicart
   },
   props: {
     cartItems: {
       type: Array as PropType<CartItem[]>,
-      default: () => []
+      default: () => [],
     }
   },
   data() {
     return {
       isMinicartOpen: false,
-      isMobileMenuOpen: false, // Novo estado para o menu mobile
+      isMobileMenuOpen: false,
+      localCartItems: [] as any[],  // Cópia local dos itens do carrinho
+      userId: 1,  // Exemplo: ID do usuário (pode ser dinâmico)
+      loading: false,
+      error: ''
     };
   },
   methods: {
     openMinicart() {
       this.isMinicartOpen = true;
+      this.loadCart();
     },
     closeMinicart() {
       this.isMinicartOpen = false;
       this.$emit('minicart-closed');
     },
     toggleMobileMenu() {
-      this.isMobileMenuOpen = !this.isMobileMenuOpen; // Alterna o estado do menu mobile
+      this.isMobileMenuOpen = !this.isMobileMenuOpen;
+    },
+    async loadCart() {
+      const userId = 1; // Defina o ID do usuário
+      try {
+        const cart = await cartService.getCart(userId);
+        console.log('Cart Data:', cart); // Verifique o que está sendo retornado
+
+        if (Array.isArray(cart)) {
+          // Se a resposta for um array de itens
+          this.localCartItems = cart.map(item => ({
+            id: item.productId,
+            name: item.items.map((item: any) => item.product.name).join(', '), // Mapear o nome conforme necessário
+            price: item.items.map((item: any) => item.product.price).join(', '), // Mapear o preço conforme necessário
+            image: item.items.map((item: any) => item.product.image).join(', '), // Mapear a imagem conforme necessário
+            quantity: item.items.map((item: any) => item.quantity).join(', '),
+          }));
+        } else {
+          console.error('Cart items are not defined or not an array');
+          this.localCartItems = []; // Inicializa como array vazio se não houver itens
+        }
+      } catch (error) {
+        console.error('Erro ao carregar o carrinho:', error);
+      }
     }
   }
-};
+});
 </script>
+
 
 <style scoped lang="scss">
 .menu-mob {
