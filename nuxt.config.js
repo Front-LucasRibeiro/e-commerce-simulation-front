@@ -25,13 +25,12 @@ export default {
   // Global CSS: https://go.nuxtjs.dev/config-css
   css: [
     'vuetify/dist/vuetify.min.css',
-    '~/styles/main.scss'
+    '~/styles/main.scss',
   ],
 
   // Plugins to run before rendering page: https://go.nuxtjs.dev/config-plugins
   plugins: [
     '~/plugins/vuetify.ts',
-    '~/plugins/vue-styled-components.ts'
   ],
 
   // Auto import components: https://go.nuxtjs.dev/config-components
@@ -43,6 +42,7 @@ export default {
     '@nuxt/typescript-build',
     // https://go.nuxtjs.dev/vuetify
     '@nuxtjs/vuetify',
+    '@nuxtjs/composition-api/module'
   ],
 
   // Modules: https://go.nuxtjs.dev/config-modules
@@ -60,6 +60,6 @@ export default {
 
   // Build Configuration: https://go.nuxtjs.dev/config-build
   build: {
-    transpile: ['vuetify']
+    transpile: ['vuetify', 'swiper'],
   }
 }

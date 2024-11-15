@@ -61,6 +61,7 @@ export default defineComponent({
 
   .copy-wrap {
     width: 100%;
+    color: #fff;
   }
 
   .footer-content {

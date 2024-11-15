@@ -3,6 +3,7 @@
     "target": "esnext",
     "module": "esnext",
     "moduleResolution": "node",
+    "allowSyntheticDefaultImports": true,
     "jsx": "preserve",
     "skipLibCheck": true,
     "forceConsistentCasingInFileNames": true,
@@ -27,7 +28,7 @@
     },
     "types": [
       "@nuxt/types",
-      "@types/node"
+      "@types/node",
     ]
   },
   "include": [
@@ -36,7 +37,12 @@
     "layouts/**/*.ts",
     "pages/**/*.ts",
     "plugins/**/*.ts",
-    "types/**/*.d.ts"
+    "types/**/*.d.ts",
+    "assets/**/*",
+    "types/declarations.d.ts",
+    "env.d.ts",
+    "/**/*",
+    "/**/*.vue"
   ],
   "exclude": [
     "node_modules",

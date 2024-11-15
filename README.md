@@ -19,5 +19,5 @@ $ yarn generate
 
 ## Frameworks and libraries
  - vuetify
- - vuex
- - vue router
+ - swiper
+ - mdi (icons)

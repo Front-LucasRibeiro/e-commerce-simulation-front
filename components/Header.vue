@@ -44,21 +44,56 @@
 
     <v-btn text class="ml-4 white--text">Minha Conta</v-btn>
 
-    <div class="count-cart ml-4">
+    <div class="count-cart ml-4" @click="openMinicart">
       <v-avatar>
         <span class="icon">🛒</span>
       </v-avatar>
-      <span class="qtd-items">0</span>
+      <span class="qtd-items">{{ cartItems.length }}</span>
     </div>
+
+    <transition name="fade">
+      <Minicart :cartItems="cartItems" :isOpen="isMinicartOpen" @minicart-closed="closeMinicart" />
+    </transition>
   </header>
 </template>
 
 <script lang="ts">
-import { defineComponent } from 'vue';
+import Minicart from '@/components/Minicart.vue';
+import { PropType } from 'vue';
 
-export default defineComponent({
-  name: 'Header',
-});
+interface CartItem {
+  id: number;
+  name: string;
+  price: string;
+  image: string;
+  quantity: number;
+}
+
+export default {
+  components: {
+    Minicart
+  },
+  props: {
+    cartItems: {
+      type: Array as PropType<CartItem[]>,
+      default: () => []
+    }
+  },
+  data() {
+    return {
+      isMinicartOpen: false,
+    };
+  },
+  methods: {
+    openMinicart() {
+      this.isMinicartOpen = true; // Abre o minicart
+    },
+    closeMinicart() {
+      this.isMinicartOpen = false; // Fecha o minicart
+      this.$emit('minicart-closed'); // Emite o evento de fechamento
+    },
+  }
+};
 </script>
 
 <style scoped lang="scss">
@@ -68,6 +103,16 @@ export default defineComponent({
   gap: 22px;
   background-color: #333;
   padding: 8px 14px;
+}
+
+.fade-enter-active,
+.fade-leave-active {
+  transition: opacity 0.5s;
+}
+
+.fade-enter,
+.fade-leave-to {
+  opacity: 0;
 }
 
 .search-field {
