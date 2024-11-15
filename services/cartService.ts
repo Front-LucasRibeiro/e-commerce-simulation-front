@@ -74,4 +74,18 @@ export const cartService = {
 
     return await response.json();
   },
+
+  // Novo método para remover um item do carrinho
+  async removeItemFromCart(cartId: number, productId: number): Promise<void> {
+    const response = await fetch(`${API_URL}/${cartId}/item/${productId}`, {
+      method: 'DELETE',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    });
+
+    if (!response.ok) {
+      throw new Error('Erro ao remover item do carrinho: ' + response.statusText);
+    }
+  },
 };

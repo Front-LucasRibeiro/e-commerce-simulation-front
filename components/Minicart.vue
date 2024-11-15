@@ -116,8 +116,16 @@ export default defineComponent({
       }
     },
 
-    removeItem(index: number) {
-      this.cartItems.splice(index, 1);
+    async removeItem(index: number) {
+      const itemToRemove = this.cartItems[index];
+      const cartId = 3; // Substitua pelo ID real do carrinho
+
+      try {
+        await cartService.removeItemFromCart(cartId, itemToRemove.id); // Chama o serviço para remover o item
+        this.cartItems.splice(index, 1); // Remove o item da lista local
+      } catch (error) {
+        console.error('Erro ao remover item do carrinho:', error);
+      }
     },
 
     formatCurrency(value: number): string {
